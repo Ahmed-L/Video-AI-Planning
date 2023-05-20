@@ -1,0 +1,8 @@
+#ignore
+.idea/
+venv/
+weights/
+facenet_model/
+from_facenet_repo/
+inceptionv3Model/inception_v3_google-0cc3c7bd.pth
+VideoAIRecognition/embeddings_dict.pkl
