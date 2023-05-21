@@ -2,9 +2,11 @@ from PIL import Image
 import numpy as np
 import tensorflow as tf
 import cv2
+from flask import app, Response, Blueprint, jsonify
 from mtcnn import MTCNN
 from inceptionv3 import preprocess, test_inference, getEmbeddingFromImage, getTopKSimilarities
 
+video = Blueprint('api', __name__)
 mtcnn = MTCNN()
 
 
@@ -25,11 +27,11 @@ def process_frames(verify=False):
         # Extract faces and send for recognition
         for face in faces:
             x, y, w, h = face['box']
-            face_img = frame[y:y + 2*h, x:x + 2*w]
+            face_img = frame[y:y + 2 * h, x:x + 2 * w]
 
-            # Preprocess the face image (resize, normalize, etc.) # Will be performed inside the v3 module by getEmbeddings()
-            # Perform face recognition using the inceptionV3
-            if(verify):
+            # Preprocess the face image (resize, normalize, etc.) # Will be performed inside the v3 module by
+            # getEmbeddings(), Perform face recognition using the inceptionV3
+            if verify:
                 pil_image = Image.fromarray(cv2.cvtColor(face_img, cv2.COLOR_BGR2RGB))
                 face_tensor = getEmbeddingFromImage(pil_image)
                 getTopKSimilarities(top_k=3, face_embedding=face_tensor)
@@ -52,6 +54,34 @@ def process_frames(verify=False):
     cv2.destroyAllWindows()
 
 
-# def detectFaces():
-
 process_frames(verify=True)
+
+# frame capture test
+# def generate_frames():
+#     cap = cv2.VideoCapture(1)
+#
+#     while True:
+#         ret, frame = cap.read()
+#         if not ret:
+#             break
+#
+#         # Convert the frame to JPEG format
+#         ret, buffer = cv2.imencode('.jpg', frame)
+#         frame_bytes = buffer.tobytes()
+#
+#         # Yield the frame as response
+#         yield (b'--frame\r\n'
+#                b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+#
+#     cap.release()
+
+
+@video.route('/test')
+def test():
+    return jsonify({'message': 'Hello, World!'})
+
+
+# Route for video streaming
+@video.route('/video_feed')
+def video_feed():
+    return Response(process_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
