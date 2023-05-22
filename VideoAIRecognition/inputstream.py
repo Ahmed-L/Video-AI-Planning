@@ -1,19 +1,29 @@
 from PIL import Image
 import numpy as np
-import tensorflow as tf
+
 import cv2
 from flask import app, Response, Blueprint, jsonify
 from mtcnn import MTCNN
 from inceptionv3 import preprocess, test_inference, getEmbeddingFromImage, getTopKSimilarities
+import logging
+import os
+
 
 video = Blueprint('api', __name__)
-mtcnn = MTCNN()
 
+# Define the text and its properties
+text = 'Hello, OpenCV!'
+font = cv2.FONT_HERSHEY_SIMPLEX
+font_scale = 1.0
+color = (0, 255, 0)  # BGR color tuple
+thickness = 2
+
+mtcnn = MTCNN()
 
 def process_frames(verify=False):
     # Open the RTSP stream using OpenCV
     # stream = cv2.VideoCapture('rtsp://your_rtsp_stream_url')
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
     while True:
         # ret, frame = stream.read()
         ret, frame = cap.read()
@@ -43,6 +53,7 @@ def process_frames(verify=False):
 
             # Display the processed frame (optional)
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            cv2.putText(frame, text, (50, 50), font, font_scale, color, thickness)
 
         # Display the processed frame (optional)
         cv2.imshow('Processed Frame', frame)
@@ -55,6 +66,7 @@ def process_frames(verify=False):
 
 
 process_frames(verify=True)
+
 
 # frame capture test
 # def generate_frames():

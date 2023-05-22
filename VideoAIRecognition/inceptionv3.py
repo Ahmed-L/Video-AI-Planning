@@ -5,12 +5,12 @@ from PIL import Image
 import pickle
 
 # Load the pretrained FaceNet model
-# model = torch.hub.load('pytorch/vision:v0.9.0', 'inception_v3', pretrained=True)  # No need to re-download
+model = torch.hub.load('pytorch/vision:v0.9.0', 'inception_v3', pretrained=True)  # No need to re-download
 
 # Load the pretrained Inception_v3 model
-model = models.inception_v3(weights=None, init_weights=True)  # weights=None == pretrained=False
-path = "../inceptionv3Model/inception_v3_google-0cc3c7bd.pth"
-model.load_state_dict(torch.load(path))
+# model = models.inception_v3(weights=None, init_weights=True)  # weights=None == pretrained=False
+# path = "../inceptionv3Model/inception_v3_google-0cc3c7bd.pth"
+# model.load_state_dict(torch.load(path))
 model.eval()
 
 # Define a transformation to preprocess the input images
@@ -22,8 +22,9 @@ preprocess = transforms.Compose([
 
 
 # Load a sample image for testing
-def getEmbeddingFromImage(image):
-    # image = Image.open(image).convert('RGB')
+def getEmbeddingFromImage(image, convert=False):
+    if convert:
+        image = Image.open(image).convert('RGB')
     input_tensor = preprocess(image)
     input_batch = input_tensor.unsqueeze(0)
 
