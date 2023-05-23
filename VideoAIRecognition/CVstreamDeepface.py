@@ -33,8 +33,9 @@ def process_frames(verify=False):
 
         # now using deepface's ssd to extract faces
         frame_array = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        ret = DeepFace.find(frame_array, '../images', 'ArcFace', 'cosine', enforce_detection=False,
-                            detector_backend='opencv', align=True, prog_bar=False, normalization='ArcFace')
+        ret = DeepFace.find(frame_array, '../images', 'Facenet', 'cosine', enforce_detection=False,
+                            detector_backend='opencv', align=True, normalization='base')
+
 
         similarity = 1
         if ret is not None:
